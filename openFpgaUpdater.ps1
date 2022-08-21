@@ -14,7 +14,7 @@ function ConvertTo-CoreList {
         $content
     )
 
-    $content.Links | Where-Object {$_.Href -match "^([^/]*/){4}[^/]*$"} | select -Property href | ForEach-Object {($_.href + "/releases").Replace("//github.com/", "//api.github.com/repos/")}
+    $content.Links | Where-Object {$_.Href -match "^([^/]*/){4}[^/]*$"} | select -Property href | ForEach-Object { $_.href }
 }
 
 # Grab central list of cores available.  Pluck out the links to their github repositories
@@ -40,7 +40,8 @@ if ($installed) {
 
 # Grabbing each core.
 Foreach ($core in $installed) {
-    $Response = (Invoke-RestMethod -uri $core.link -UserAgent "KeenIIDX")[0]
+    $apiLink = ($core.link + "/releases").Replace("//github.com/", "//api.github.com/repos/")
+    $Response = (Invoke-RestMethod -uri $apiLink -UserAgent "KeenIIDX")[0]
     $availableVersion = $Response.tag_name -replace( '.*(?<version>\d+\.\d+\.\d+).*', '${version}' )
 
     if ( [System.Version]$core.version -lt [System.Version]$availableVersion ) {
