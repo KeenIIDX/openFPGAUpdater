@@ -7,7 +7,7 @@ If you have not run the script before, open a Powershell prompt and run:
 
     PS> Set-ExecutionPolicy Unrestricted -Scope CurrentUser
     
-Download the Powershell script [here](https://github.com/KeenIIDX/openFPGAUpdater/releases/download/v1.1.0/openFpgaUpdater.ps1) (and optionally a list of the available cores in [this file](https://github.com/KeenIIDX/openFPGAUpdater/releases/download/v1.1.0/core_repos.json)) and place it on the root of your Pocket's micro SD card.  Right click the file, click 'Run with PowerShell'.  A window will open as it's running.  On first run, it will download and install all the available cores.  Every time you run it in the future it will only download new cores and updates to installed cores.
+Download the Powershell script [here](https://github.com/KeenIIDX/openFPGAUpdater/releases/latest/download/openFpgaUpdater.ps1) (and optionally a list of the available cores in [this file](https://github.com/KeenIIDX/openFPGAUpdater/releases/latest/download/core_repos.json)) and place it on the root of your Pocket's micro SD card.  Right click the file, click 'Run with PowerShell'.  A window will open as it's running.  On first run, it will download and install all the available cores.  Every time you run it in the future it will only download new cores and updates to installed cores.
 
 ## Thanks
 * Thank you to Josh Campbell for his [openFPGA Cores Inventory](https://joshcampbell191.github.io/openfpga-cores-inventory/analogue-pocket) page.
