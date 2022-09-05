@@ -43,7 +43,7 @@ Foreach ($core in $installed) {
     $apiLink = ($core.link + "/releases").Replace("//github.com/", "//api.github.com/repos/")
     $Response = (Invoke-RestMethod -uri $apiLink -UserAgent "KeenIIDX")[0]
     $availableVersion = $Response.tag_name -replace( '.*(?<version>\d+\.\d+\.\d+).*', '${version}' )
-    if ($availableVersion -eq $Response.tag_name) {
+    if ( ($availableVersion -eq $Response.tag_name) -and ($Response.tag_name -notmatch '^\d+\.\d+\.\d+$')) {
         $availableVersion = $Response.tag_name -replace( '.*(?<version>\d+\.\d+).*', '${version}' )
     }
 
