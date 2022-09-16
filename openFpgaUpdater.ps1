@@ -1,5 +1,6 @@
 ﻿$CoreSource = "https://joshcampbell191.github.io/openfpga-cores-inventory/analogue-pocket"
 $localCores = "core_repos.json"
+Add-Type -AssemblyName 'System.IO.Compression.FileSystem'
 
 function Get-MainCoreList {
     param (
@@ -54,14 +55,27 @@ Foreach ($core in $installed) {
                 $fileName = $file.name
                 $downloadPath = "$env:TEMP\$fileName"
 
-                #Update cached version
-                $core.version = $availableVersion
-
                 #Download the core.
                 Invoke-WebRequest -Uri $downloadLink -OutFile $downloadPath
 
-                #Unzip the core to here.
-                Expand-Archive -Path $downloadPath -DestinationPath .\ -Force
+                #Validate it's a core.
+                $zipFile = [IO.Compression.ZipFile]::OpenRead($downloadPath)
+                $itsACore = $false
+                foreach ($coreFile in $zipFile.Entries) {
+                    if ( $coreFile.FullName -like 'Cores/*' ) {
+                        $itsACore = $true
+                        break
+                    }
+                }
+                $zipFile.Dispose()
+
+                if ($itsACore) {
+                    #Update cached version
+                    $core.version = $availableVersion
+
+                    #Unzip the core to here.
+                    Expand-Archive -Path $downloadPath -DestinationPath .\ -Force
+                }
 
                 #Delete the downloaded file.
                 Remove-Item -Path $downloadPath -Force
