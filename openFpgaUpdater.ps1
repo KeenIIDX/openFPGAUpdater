@@ -2,6 +2,11 @@
 $localCores = "core_repos.json"
 Add-Type -AssemblyName 'System.IO.Compression.FileSystem'
 
+if (Test-Path ".token") {
+    $token = Get-Content -Raw -Path ".token"
+    $headers = @{ Authorization = "Bearer $token" }
+}
+
 function Get-MainCoreList {
     param (
         $url
@@ -15,7 +20,7 @@ function ConvertTo-CoreList {
         $content
     )
 
-    $content.Links | Where-Object {$_.Href -match "^([^/]*/){4}[^/]*$"} | select -Property href | ForEach-Object { $_.href }
+    $content.Links | Where-Object {$_.Href -match "^([^/]*/){4}[^/]*$"} | select -ExpandProperty href
 }
 
 # Grab central list of cores available.  Pluck out the links to their github repositories
@@ -42,7 +47,7 @@ if ($installed) {
 # Grabbing each core.
 Foreach ($core in $installed) {
     $apiLink = ($core.link + "/releases").Replace("//github.com/", "//api.github.com/repos/")
-    $Response = (Invoke-RestMethod -uri $apiLink -UserAgent "KeenIIDX")[0]
+    $Response = (Invoke-RestMethod -uri $apiLink -UserAgent "KeenIIDX" -Headers $headers)[0]
     $availableVersion = $Response.tag_name -replace( '.*(?<version>\d+\.\d+\.\d+).*', '${version}' )
     if ( ($availableVersion -eq $Response.tag_name) -and ($Response.tag_name -notmatch '^\d+\.\d+\.\d+$')) {
         $availableVersion = $Response.tag_name -replace( '.*(?<version>\d+\.\d+).*', '${version}' )
