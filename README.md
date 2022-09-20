@@ -1,5 +1,7 @@
 # openFPGA Updater
 
+![GitHub all releases](https://img.shields.io/github/downloads/KeenIIDX/openFPGAUpdater/total?style=social)
+
 This Windows Powershell script automates downloading all of the currently-available cores for the [Analogue Pocket's](https://www.analogue.co/pocket) OpenFPGA feature, and automates updating them in the future.
 
 ## Setup
