@@ -1,4 +1,4 @@
-﻿$CoreSource = "https://joshcampbell191.github.io/openfpga-cores-inventory/analogue-pocket"
+﻿$CoreSource = "https://joshcampbell191.github.io/openfpga-cores-inventory/api/v1/analogue-pocket/cores.json"
 $localCores = "core_repos.json"
 Add-Type -AssemblyName 'System.IO.Compression.FileSystem'
 
@@ -9,6 +9,8 @@ if (Test-Path ".token") {
 
 function Get-MainCoreList {
     param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [string]
         $url
     )
 
@@ -17,15 +19,15 @@ function Get-MainCoreList {
 
 function ConvertTo-CoreList {
     param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         $content
     )
 
-    $content.Links | Where-Object {$_.Href -match "^([^/]*/){4}[^/]*$"} | select -ExpandProperty href
+    $content | ConvertFrom-Json | select -ExpandProperty data | Where-Object { $_.repository.platform -eq "github" } | foreach { "https://$($_.repository.platform).com/$($_.repository.owner)/$($_.repository.name)" }
 }
 
 # Grab central list of cores available.  Pluck out the links to their github repositories
-$newCores = Get-MainCoreList -url $CoreSource
-$newCores = ConvertTo-CoreList -content $newCores
+$newCores = Get-MainCoreList -url $CoreSource | ConvertTo-CoreList
 
 # Load local list of cores
 $installed = Get-Content -Raw -ErrorAction:Ignore -Path $localCores | ConvertFrom-Json
@@ -43,6 +45,9 @@ if ($installed) {
 } else {
     $installed = $newCores | foreach { [PSCustomObject]@{ link = $_ ; version = "0.0.0" } }
 }
+
+# agg23 changed these repos, just hardcoding removing them.
+$installed = $installed | Where-Object { $_.link -notin "https://github.com/agg23/analogue-arduboy", "https://github.com/agg23/analogue-pong" }
 
 # Grabbing each core.
 Foreach ($core in $installed) {
@@ -71,6 +76,10 @@ Foreach ($core in $installed) {
                         $itsACore = $true
                         break
                     }
+                }
+                if ($itsACore) {
+                    $coreFilePath = $zipFile.Entries | Where-Object -Property Name -eq "core.json" | Select-Object -ExpandProperty FullName # Used later to ...find Assets folder?  But we can just read that from the zip...
+                    $dataFilePath = $zipFile.Entries | Where-Object -Property Name -eq "data.json" | Select-Object -ExpandProperty FullName # Used later to see if it's an arcade core
                 }
                 $zipFile.Dispose()
 
