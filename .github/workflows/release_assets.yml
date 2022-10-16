@@ -1,6 +1,6 @@
 # Add files to new Release
 name: Release-Assets
-run-name: Adding assets for {{ $github.event.release.tag_name }}
+run-name: Adding assets for {{ $github.ref_name }}
 
 on:
   # Triggers the workflow on adding a new release
