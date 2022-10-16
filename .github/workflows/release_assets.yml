@@ -1,0 +1,39 @@
+# Add files to new Release
+name: Release-Assets
+run-name: Adding assets for {{ $github.event.release.tag_name }}
+
+on:
+  # Triggers the workflow on adding a new release
+  release:
+    types: [released]
+
+jobs:
+  add_files:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      # Upload the Powershell script to the new Release
+      - name: Upload Script
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: openFpgaUpdater.ps1
+          asset_name: openFpgaUpdater.ps1
+          asset_content_type: application/octet-stream
+          
+      # Upload the JSON file to the new Release
+      - name: Upload JSON
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: core_repos.json
+          asset_name: core_repos.json
+          asset_content_type: application/json
